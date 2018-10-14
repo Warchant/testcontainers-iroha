@@ -20,8 +20,10 @@ script:
 - "./gradlew test"
 - "./gradlew jacocoTestReport"
 - "bash <(curl -s https://codecov.io/bash)"
+
+after_script:
 - "./gradlew sonarqube \
-  -Dsonar.organization=soramitsu \
-  -Dsonar.projectKey=testcontainers-iroha \
-  -Dsonar.host.url=https://sonar.soramitsu.co.jp \
-  -Dsonar.login=${SONAR_TOKEN}"
+    -Dsonar.organization=soramitsu \
+    -Dsonar.projectKey=testcontainers-iroha \
+    -Dsonar.host.url=https://sonar.soramitsu.co.jp \
+    -Dsonar.login=${SONAR_TOKEN}"

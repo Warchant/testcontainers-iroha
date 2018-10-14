@@ -1,33 +1,34 @@
-package jp.co.soramitsu.iroha.testcontainers.iroha;
+package jp.co.soramitsu.iroha.testcontainers;
 
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
-import com.github.dockerjava.api.command.InspectContainerResponse;
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
+import jp.co.soramitsu.iroha.testcontainers.detail.PostgresConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.FailureDetectingExternalResource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.lifecycle.Startable;
 
+/**
+ * @implNote If you get {@link com.github.dockerjava.api.exception.DockerException}: Mounts denied,
+ * please refer to https://github.com/testcontainers/testcontainers-java/issues/730
+ */
 @NoArgsConstructor
 public class IrohaContainer extends FailureDetectingExternalResource implements AutoCloseable,
-    Startable, WaitStrategyTarget, ContainerState {
+    Startable {
 
   public static final String defaultPostgresAlias = "iroha.postgres";
   public static final String defaultIrohaAlias = "iroha";
   public static final String irohaWorkdir = "/opt/iroha_data";
-  public static final String defaultIrohaDockerImage = "hyperledger/iroha:1.0.0_beta-4";
+  public static final String defaultIrohaDockerImage = "warchantua/iroha:1.0.0_beta-4";
   public static final String postgresDockerImage = "postgres:9.5";
 
   // env vars
@@ -43,6 +44,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   private Logger logger = LoggerFactory.getLogger(IrohaContainer.class);
 
   // use default config
+  @Getter
   private PeerConfig conf = new PeerConfig();
 
   private Slf4jLogConsumer logConsumer;
@@ -60,6 +62,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   }
 
   public IrohaContainer configure() {
+    // save config to temp dir
+    conf.save();
+
     // init logger
     logConsumer = new Slf4jLogConsumer(logger);
 
@@ -69,8 +74,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
     // init postgres
     PostgresConfig pg = conf.getIrohaConfig().getPg_opt();
     postgres = (PostgreSQLContainer) new PostgreSQLContainer(postgresDockerImage)
-        .withUsername(pg.getUsername())
+        .withUsername(pg.getUser())
         .withPassword(pg.getPassword())
+        .withDatabaseName(pg.getUser())
         .withExposedPorts(pg.getPort())
         .withNetwork(network)
         .withNetworkAliases(pg.getHost(), defaultPostgresAlias);
@@ -81,16 +87,17 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withEnv(POSTGRES_HOST, postgres.getContainerIpAddress())
         .withEnv(POSTGRES_USER, postgres.getUsername())
         .withEnv(POSTGRES_PASSWORD, postgres.getPassword())
+        .withEnv("WAIT_TIMEOUT", "1")
         .withNetwork(network)
         .withExposedPorts(
             conf.getIrohaConfig().getTorii_port(),
             conf.getIrohaConfig().getInternal_port()
         )
         .withLogConsumer(logConsumer)
-        .withFileSystemBind(conf.getDir().toString(), irohaWorkdir, READ_ONLY)
+        .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
         .waitingFor(
-            Wait.forLogMessage(".*iroha initialized.*", 1)
-                .withStartupTimeout(Duration.ofSeconds(10))
+            Wait.forLogMessage(".*iroha initialized.*\\s", 1)
+                .withStartupTimeout(Duration.ofSeconds(20))
         )
         .withNetworkAliases(defaultIrohaAlias);
 
@@ -120,6 +127,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
 
   @Override
   public void start() {
+    configure();
     postgres.start();
     iroha.start();
   }
@@ -128,21 +136,5 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   public void stop() {
     iroha.stop();
     postgres.stop();
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public List<Integer> getExposedPorts() {
-    return iroha.getExposedPorts();
-  }
-
-  @Override
-  public String getContainerId() {
-    return iroha.getContainerId();
-  }
-
-  @Override
-  public InspectContainerResponse getContainerInfo() {
-    return iroha.getContainerInfo();
   }
 }

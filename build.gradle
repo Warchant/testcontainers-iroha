@@ -27,6 +27,8 @@ final def spockGenesisVersion = '0.6.0'
 final def cglibVersion = '3.2.8'
 final def bytebuddyVersion = '1.9.1'
 final def objgenesisVersion = '3.0'
+final def slf4jVersion = '1.7.25'
+final def junitVersion = '4.12'
 
 dependencies {
     // for mocking in groovy
@@ -35,6 +37,9 @@ dependencies {
     testCompile("cglib:cglib-nodep:${cglibVersion}")
     testCompile("com.nagternal:spock-genesis:${spockGenesisVersion}")
     testCompile("org.spockframework:spock-core:${spockVersion}")
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jVersion}"
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: "${slf4jVersion}"
 
     //lombok
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
@@ -47,13 +52,13 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
     // iroha java
-    implementation "com.github.warchant:iroha-pure-java:${irohaPureJavaVersion}"
+    compile "com.github.warchant:iroha-pure-java:${irohaPureJavaVersion}"
 
     // testcontainers
     compile("org.testcontainers:postgresql:${testContainersPostgresVersion}")
     compile("org.testcontainers:testcontainers:${testContainersVersion}")
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit', name: 'junit', version: "${junitVersion}"
 }
 
 jacoco {
