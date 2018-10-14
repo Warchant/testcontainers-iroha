@@ -3,6 +3,11 @@ sudo: required
 services:
 - docker
 
+addons:
+  apt:
+    packages:
+    - docker-ce
+
 language: java
 jdk:
 - oraclejdk8
@@ -21,8 +26,6 @@ script:
 - "./gradlew test --info"
 - "./gradlew jacocoTestReport"
 - "bash <(curl -s https://codecov.io/bash)"
-
-after_script:
 - "./gradlew sonarqube \
     -Dsonar.organization=soramitsu \
     -Dsonar.projectKey=testcontainers-iroha \

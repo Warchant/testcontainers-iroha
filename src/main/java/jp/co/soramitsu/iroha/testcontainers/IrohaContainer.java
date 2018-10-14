@@ -2,7 +2,6 @@ package jp.co.soramitsu.iroha.testcontainers;
 
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
-import java.time.Duration;
 import java.util.UUID;
 import jp.co.soramitsu.iroha.testcontainers.detail.PostgresConfig;
 import lombok.Getter;
@@ -96,8 +95,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withLogConsumer(logConsumer)
         .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
         .waitingFor(
-            Wait.forLogMessage(".*iroha initialized.*\\s", 1)
-                .withStartupTimeout(Duration.ofSeconds(60))
+            Wait.forHealthcheck()
+//            Wait.forLogMessage(".*iroha initialized.*\\s", 1)
+//                .withStartupTimeout(Duration.ofSeconds(60))
         )
         .withNetworkAliases(defaultIrohaAlias);
 
