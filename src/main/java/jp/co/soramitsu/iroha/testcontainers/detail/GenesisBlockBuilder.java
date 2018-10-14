@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import jp.co.soramitsu.crypto.ed25519.Ed25519Sha3;
 import jp.co.soramitsu.iroha.java.Transaction;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 public class GenesisBlockBuilder {
@@ -52,13 +53,14 @@ public class GenesisBlockBuilder {
     return this;
   }
 
-  public GenesisBlockBuilder addTransaction(TransactionOuterClass.Transaction transaction) {
+  public GenesisBlockBuilder addTransaction(
+      @NonNull TransactionOuterClass.Transaction transaction) {
     blockPayload.addTransactions(transaction);
     return this;
   }
 
   public GenesisBlockBuilder addAllTransactions(
-      Iterable<? extends TransactionOuterClass.Transaction> transactions) {
+      @NonNull Iterable<? extends TransactionOuterClass.Transaction> transactions) {
     blockPayload.addAllTransactions(transactions);
     return this;
   }

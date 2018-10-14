@@ -18,7 +18,7 @@ cache:
 script:
 - "./gradlew --daemon"
 - "./gradlew assemble -x test --parallel"
-- "./gradlew test"
+- "./gradlew test --info"
 - "./gradlew jacocoTestReport"
 - "bash <(curl -s https://codecov.io/bash)"
 

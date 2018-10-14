@@ -36,22 +36,17 @@ public class IrohaConfig {
   private PostgresConfig pg_opt = PostgresConfig.builder().build();
 
   @Builder.Default
-  @NonNull
   private int max_proposal_size = 10;
 
   @Builder.Default
-  @NonNull
   private int proposal_delay = 1000;
 
   @Builder.Default
-  @NonNull
   private int vote_delay = 1000;
 
   @Builder.Default
-  @NonNull
   private int load_delay = 1000;
 
   @Builder.Default
-  @NonNull
   private boolean mst_enable = false;
 }
