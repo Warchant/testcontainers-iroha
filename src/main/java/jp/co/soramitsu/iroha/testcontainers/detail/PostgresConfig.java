@@ -24,12 +24,14 @@ public class PostgresConfig {
   @Builder.Default
   @NonNull
   private String host = "iroha.postgres";
+
   @Builder.Default
-  @NonNull
   private int port = 5432;
+
   @Builder.Default
   @NonNull
   private String user = "postgres";
+  
   @Builder.Default
   @NonNull
   private String password = "postgres";

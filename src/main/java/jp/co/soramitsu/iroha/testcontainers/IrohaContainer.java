@@ -88,17 +88,10 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withEnv(POSTGRES_PASSWORD, postgres.getPassword())
         .withEnv("WAIT_TIMEOUT", "1")
         .withNetwork(network)
-        .withExposedPorts(
-            conf.getIrohaConfig().getTorii_port(),
-            conf.getIrohaConfig().getInternal_port()
-        )
+        .withExposedPorts(conf.getIrohaConfig().getTorii_port())
         .withLogConsumer(logConsumer)
         .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
-        .waitingFor(
-            Wait.forHealthcheck()
-//            Wait.forLogMessage(".*iroha initialized.*\\s", 1)
-//                .withStartupTimeout(Duration.ofSeconds(60))
-        )
+        .waitingFor(Wait.forHealthcheck())
         .withNetworkAliases(defaultIrohaAlias);
 
     return this;
@@ -137,4 +130,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
     iroha.stop();
     postgres.stop();
   }
+
+  public String getToriiAddress() {
+    return String.format("%s:%d", iroha.getContainerIpAddress(), iroha.getFirstMappedPort());
+  }
+
 }

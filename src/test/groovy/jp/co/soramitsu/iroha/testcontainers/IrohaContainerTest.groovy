@@ -13,7 +13,6 @@ class IrohaContainerTest extends Specification {
     @Rule
     IrohaContainer ir = new IrohaContainer()
 
-
     def "temp folder is created and files are written"() {
         given:
         def mapper = new ObjectMapper()
@@ -69,6 +68,5 @@ class IrohaContainerTest extends Specification {
         !ir.iroha.isRunning()
         !ir.postgres.isCreated()
         !ir.postgres.isRunning()
-
     }
 }
