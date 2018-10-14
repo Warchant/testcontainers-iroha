@@ -97,7 +97,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
         .waitingFor(
             Wait.forLogMessage(".*iroha initialized.*\\s", 1)
-                .withStartupTimeout(Duration.ofSeconds(20))
+                .withStartupTimeout(Duration.ofSeconds(60))
         )
         .withNetworkAliases(defaultIrohaAlias);
 
