@@ -20,14 +20,15 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 
+before_install:
+- docker version
+
 script:
 - "./gradlew --daemon"
 - "./gradlew assemble -x test --parallel"
-- "./gradlew test --info"
+- "./gradlew test"
 - "./gradlew jacocoTestReport"
 - "bash <(curl -s https://codecov.io/bash)"
 - "./gradlew sonarqube \
-    -Dsonar.organization=soramitsu \
-    -Dsonar.projectKey=testcontainers-iroha \
     -Dsonar.host.url=https://sonar.soramitsu.co.jp \
     -Dsonar.login=${SONAR_TOKEN}"

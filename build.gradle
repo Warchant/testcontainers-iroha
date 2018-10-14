@@ -18,7 +18,6 @@ repositories {
 }
 
 final def testContainersVersion = '1.9.1'
-final def testContainersPostgresVersion = '1.8.1'
 final def irohaPureJavaVersion = '0.4.0'
 final def lombokVersion = '1.18.2'
 final def jacksonVersion = '2.9.7'
@@ -55,7 +54,7 @@ dependencies {
     compile "com.github.warchant:iroha-pure-java:${irohaPureJavaVersion}"
 
     // testcontainers
-    compile("org.testcontainers:postgresql:${testContainersPostgresVersion}")
+    compile("org.testcontainers:postgresql:${testContainersVersion}")
     compile("org.testcontainers:testcontainers:${testContainersVersion}")
 
     testCompile group: 'junit', name: 'junit', version: "${junitVersion}"

@@ -55,6 +55,7 @@ class IrohaContainerTest extends Specification {
 
         then:
         ir.iroha.isCreated()
+        ir.iroha.isHealthy()
         ir.iroha.isRunning()
         ir.postgres.isCreated()
         ir.postgres.isRunning()
@@ -64,6 +65,7 @@ class IrohaContainerTest extends Specification {
 
         then:
         !ir.iroha.isCreated()
+        !ir.iroha.isHealthy()
         !ir.iroha.isRunning()
         !ir.postgres.isCreated()
         !ir.postgres.isRunning()
