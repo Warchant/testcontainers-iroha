@@ -1,13 +1,10 @@
 sudo: required
-
 services:
 - docker
-
 addons:
   apt:
     packages:
     - docker-ce
-
 language: java
 jdk:
 - oraclejdk8
@@ -19,16 +16,16 @@ cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-
 before_install:
 - docker version
-
+env:
+  global:
+    secure: xsP0SlPqXM3tnvSreeWi9c303rX04d6ohA2cpIDCOH2kH84kdxEVydhfTGby7F7HLU813tksf6RNnjq8AiITwGR4Ryf+rrEysB4uVtbAbIbdLyRfCPJYc6PublfTHSrcwiTdjUpFRbL0ylS/1pbO+7IOGT5xIDMn0bX2RCDcm9Q4DZZMAHskgV+B+ITfUiumolcTSOE86URcisjk8rPOtRjm3CtIYwx3yuetpBzBg8Fbo1uKvz+Go4OGc+BASVkJ9NS1H95KOj5Dab1XJ+pgvRKRrz1+0zfwbsz6UWCZR+zaQWR0qnsMs4LFw7K+uU+0MR2iCdRTgIxbllYniwsHcbYY4NfIIoD1AL82e30TZJACPa+kH+OjYXqYXvVxucaZGBSACvRykZyLVzLXFhJ8o+lpk1EYxRIXoMQ2wfEorV5ZZXNfwJ//AWy/DRsgunvMmDemcAW0Zez1lsw9BDw89mCSjFlZpyPRG395vuSYOTRzqUXeFCicv8xnZbON805XKfUY718zwjAFlBNyCXsSCTL4bi2wZdzG6yXrz+IV0LiCMg1ljs7OWAJNW66t69O3c/vgwAouS8UcA441gc2YTDqSIdKZqoGBPIIJK35gBupP4DJdDqx7NhsWsCXXO4jMWsp51GvsfDz7BomfTm8OfHE9CtIuGpLv7lG1o1LlW3A=
 script:
 - "./gradlew --daemon"
 - "./gradlew assemble -x test --parallel"
 - "./gradlew test"
 - "./gradlew jacocoTestReport"
-- "bash <(curl -s https://codecov.io/bash)"
-- "./gradlew sonarqube \
-    -Dsonar.host.url=https://sonar.soramitsu.co.jp \
-    -Dsonar.login=${SONAR_TOKEN}"
+- bash <(curl -s https://codecov.io/bash)
+after_success:
+- "./gradlew sonarqube -Dsonar.host.url=https://sonar.soramitsu.co.jp -Dsonar.login=${SONAR_TOKEN}"
