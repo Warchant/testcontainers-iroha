@@ -13,6 +13,12 @@ class IrohaContainerTest extends Specification {
     @Rule
     IrohaContainer ir = new IrohaContainer()
 
+    // run after every feature method
+    def cleanup() {
+        ir.getHostConfigDir().deleteOnExit()
+    }
+
+
     def "temp folder is created and files are written"() {
         given:
         def mapper = new ObjectMapper()
@@ -53,20 +59,18 @@ class IrohaContainerTest extends Specification {
         ir.start()
 
         then:
-        ir.iroha.isCreated()
-        ir.iroha.isHealthy()
-        ir.iroha.isRunning()
-        ir.postgres.isCreated()
-        ir.postgres.isRunning()
+        ir.irohaDockerContainer.isCreated()
+        ir.irohaDockerContainer.isRunning()
+        ir.postgresDockerContainer.isCreated()
+        ir.postgresDockerContainer.isRunning()
 
         when:
         ir.stop()
 
         then:
-        !ir.iroha.isCreated()
-        !ir.iroha.isHealthy()
-        !ir.iroha.isRunning()
-        !ir.postgres.isCreated()
-        !ir.postgres.isRunning()
+        !ir.irohaDockerContainer.isCreated()
+        !ir.irohaDockerContainer.isRunning()
+        !ir.postgresDockerContainer.isCreated()
+        !ir.postgresDockerContainer.isRunning()
     }
 }

@@ -22,7 +22,6 @@ public class IrohaConfig {
 
   @Builder.Default
   @NonNull
-  @JsonProperty("block_store_path")
   private String block_store_path = "/blocks";
 
   @Builder.Default

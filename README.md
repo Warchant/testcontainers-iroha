@@ -14,7 +14,6 @@ https://jitpack.io/#warchant/testcontainers-iroha
 # Usage
 
 ```java
-
 class MyTest {
   
   @Rule
@@ -36,5 +35,23 @@ class MyTest {
     // ...
   }
 }
+```
 
+`IrohaContainer` starts Postgres and Iroha docker containers with given `PeerConfig`. 
+There is a default config for test purposes.
+
+# Configuration
+
+- genesis block: see [GenesisBlockBuilder.java](https://github.com/Warchant/testcontainers-iroha/blob/master/src/main/java/jp/co/soramitsu/iroha/testcontainers/detail/GenesisBlockBuilder.java).
+- json config: see [IrohaConfig.java](https://github.com/Warchant/testcontainers-iroha/blob/master/src/main/java/jp/co/soramitsu/iroha/testcontainers/detail/IrohaConfig.java).
+- postgres config: see [PostgresConfig.java](https://github.com/Warchant/testcontainers-iroha/blob/master/src/main/java/jp/co/soramitsu/iroha/testcontainers/detail/PostgresConfig.java).
+
+To change default configuration:
+```java
+IrohaContainer iroha = new IrohaContainer()
+    .withPeerConfig( /* pass config here */ );
+    
+iroha.start();
+...
+iroha.stop();
 ```

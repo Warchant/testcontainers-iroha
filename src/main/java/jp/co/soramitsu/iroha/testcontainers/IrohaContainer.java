@@ -2,10 +2,13 @@ package jp.co.soramitsu.iroha.testcontainers;
 
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
+import java.io.Closeable;
+import java.io.File;
 import java.util.UUID;
 import jp.co.soramitsu.iroha.testcontainers.detail.PostgresConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.FailureDetectingExternalResource;
@@ -22,7 +25,7 @@ import org.testcontainers.lifecycle.Startable;
  */
 @NoArgsConstructor
 public class IrohaContainer extends FailureDetectingExternalResource implements AutoCloseable,
-    Startable {
+    Startable, Closeable {
 
   public static final String defaultPostgresAlias = "iroha.postgres";
   public static final String defaultIrohaAlias = "iroha";
@@ -49,9 +52,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   private Slf4jLogConsumer logConsumer;
 
   @Getter
-  private PostgreSQLContainer postgres;
+  private PostgreSQLContainer postgresDockerContainer;
   @Getter
-  private GenericContainer iroha;
+  private GenericContainer irohaDockerContainer;
   @Getter
   private Network network;
 
@@ -70,9 +73,9 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
     // init docker network
     network = Network.builder().id(networkName).build();
 
-    // init postgres
+    // init postgresDockerContainer
     PostgresConfig pg = conf.getIrohaConfig().getPg_opt();
-    postgres = (PostgreSQLContainer) new PostgreSQLContainer(postgresDockerImage)
+    postgresDockerContainer = (PostgreSQLContainer) new PostgreSQLContainer(postgresDockerImage)
         .withUsername(pg.getUser())
         .withPassword(pg.getPassword())
         .withDatabaseName(pg.getUser())
@@ -80,35 +83,32 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withNetwork(network)
         .withNetworkAliases(pg.getHost(), defaultPostgresAlias);
 
-    // init iroha container
-    iroha = new GenericContainer<>(irohaDockerImage)
+    // init irohaDockerContainer container
+    irohaDockerContainer = new GenericContainer<>(irohaDockerImage)
         .withEnv(KEY, PeerConfig.peerKeypairName)
-        .withEnv(POSTGRES_HOST, postgres.getContainerIpAddress())
-        .withEnv(POSTGRES_USER, postgres.getUsername())
-        .withEnv(POSTGRES_PASSWORD, postgres.getPassword())
+        .withEnv(POSTGRES_HOST, postgresDockerContainer.getContainerIpAddress())
+        .withEnv(POSTGRES_USER, postgresDockerContainer.getUsername())
+        .withEnv(POSTGRES_PASSWORD, postgresDockerContainer.getPassword())
         .withEnv("WAIT_TIMEOUT", "1")
         .withNetwork(network)
         .withExposedPorts(conf.getIrohaConfig().getTorii_port())
         .withLogConsumer(logConsumer)
         .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
-        .waitingFor(Wait.forHealthcheck())
+        .waitingFor(
+            Wait.forListeningPort()
+        )
         .withNetworkAliases(defaultIrohaAlias);
 
     return this;
   }
 
 
-  public IrohaContainer withPeerConfig(PeerConfig conf) {
+  public IrohaContainer withPeerConfig(@NonNull PeerConfig conf) {
     this.conf = conf;
     return this;
   }
 
-  public IrohaContainer withDockerImage(String dockerImage) {
-    this.irohaDockerImage = dockerImage;
-    return this;
-  }
-
-  public IrohaContainer withNetwork(String networkName) {
+  public IrohaContainer withNetwork(@NonNull String networkName) {
     this.networkName = networkName;
     return this;
   }
@@ -121,18 +121,32 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   @Override
   public void start() {
     configure();
-    postgres.start();
-    iroha.start();
+    postgresDockerContainer.start();
+    irohaDockerContainer.start();
   }
 
   @Override
   public void stop() {
-    iroha.stop();
-    postgres.stop();
+    irohaDockerContainer.stop();
+    postgresDockerContainer.stop();
+  }
+
+  @Override
+  public void close() {
+    stop();
   }
 
   public String getToriiAddress() {
-    return String.format("%s:%d", iroha.getContainerIpAddress(), iroha.getFirstMappedPort());
+    return String.format("%s:%d",
+        irohaDockerContainer.getContainerIpAddress(),
+        irohaDockerContainer.getMappedPort(
+            conf.getIrohaConfig().getTorii_port()
+        )
+    );
+  }
+
+  public File getHostConfigDir() {
+    return conf.getDir();
   }
 
 }
