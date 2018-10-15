@@ -20,6 +20,16 @@ class MyTest {
   @Rule
   IrohaContainer iroha = new IrohaContainer();
   
+  @BeforeAll
+  public void beforeAll(){
+    iroha.start(); // starts iroha and postgres
+  }
+  
+  @AfterAll
+  public void afterAll(){
+    iroha.stop(); // stops iroha and postgres
+  }
+  
   @Test
   public TestWithIroha (){
     String toriiAddr = iroha.getToriiAddress();  // iroha API host:port (torii)
