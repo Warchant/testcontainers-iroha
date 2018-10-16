@@ -4,11 +4,13 @@ import static org.testcontainers.containers.BindMode.READ_ONLY;
 
 import java.io.Closeable;
 import java.io.File;
+import java.net.URI;
 import java.util.UUID;
 import jp.co.soramitsu.iroha.testcontainers.detail.PostgresConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.FailureDetectingExternalResource;
@@ -136,13 +138,14 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
     stop();
   }
 
-  public String getToriiAddress() {
-    return String.format("%s:%d",
-        irohaDockerContainer.getContainerIpAddress(),
-        irohaDockerContainer.getMappedPort(
-            conf.getIrohaConfig().getTorii_port()
-        )
+  @SneakyThrows
+  public URI getToriiAddress() {
+    String host = irohaDockerContainer.getContainerIpAddress();
+    int port = irohaDockerContainer.getMappedPort(
+        conf.getIrohaConfig().getTorii_port()
     );
+
+    return new URI("grpc", null, host, port, null, null, null);
   }
 
   public File getHostConfigDir() {
