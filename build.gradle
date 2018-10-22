@@ -18,7 +18,7 @@ repositories {
 }
 
 final def testContainersVersion = '1.9.1'
-final def irohaPureJavaVersion = '0.4.0'
+final def irohaPureJavaVersion = '0.5.0'
 final def lombokVersion = '1.18.2'
 final def jacksonVersion = '2.9.7'
 final def spockVersion = '1.2-groovy-2.4'

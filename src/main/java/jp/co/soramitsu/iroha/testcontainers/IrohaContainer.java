@@ -131,6 +131,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   public void stop() {
     irohaDockerContainer.stop();
     postgresDockerContainer.stop();
+    conf.getDir().deleteOnExit();
   }
 
   @Override

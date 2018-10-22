@@ -19,6 +19,8 @@ public class GenesisBlockBuilder {
 
   // this one must be equal to the name passed to iroha entrypoint.sh
   public static final String defaultGenesisBlockName = "genesis.block";
+  public static final String defaultRoleName = "default";
+  public static final String defaultDomainName = "test";
 
   public static final KeyPair defaultKeyPair = Ed25519Sha3.keyPairFromBytes(
       parseHexBinary("0000000000000000000000000000000000000000000000000000000000000000"),
@@ -36,16 +38,16 @@ public class GenesisBlockBuilder {
             .addPeer("0.0.0.0:10001", defaultKeyPair.getPublic().getEncoded())
             // give all permissions
             .createRole(
-                "defaultRole",
+                defaultRoleName,
                 IntStream.range(0, 42 /* check RolePermission numbers */)
                     .boxed()
                     .map(RolePermission::forNumber)
                     .collect(Collectors.toList())
             )
             // create domain "test"
-            .createDomain("test", "defaultRole")
+            .createDomain(defaultDomainName, defaultRoleName)
             // create account test@test with default pubkey
-            .createAccount("test", "test", defaultKeyPair.getPublic())
+            .createAccount("test", defaultDomainName, defaultKeyPair.getPublic())
             .sign(defaultKeyPair)
             .build() // protobuf Transaction
     );
