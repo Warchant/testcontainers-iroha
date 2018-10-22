@@ -16,7 +16,6 @@ https://jitpack.io/#warchant/testcontainers-iroha
 ```java
 class MyTest {
   
-  @Rule
   IrohaContainer iroha = new IrohaContainer();
   
   @BeforeAll
@@ -31,7 +30,7 @@ class MyTest {
   
   @Test
   public TestWithIroha (){
-    String toriiAddr = iroha.getToriiAddress();  // iroha API host:port (torii)
+    URI toriiAddr = iroha.getToriiAddress();  // iroha API host:port (torii)
     // ...
   }
 }

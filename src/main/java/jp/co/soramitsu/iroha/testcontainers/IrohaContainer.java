@@ -5,6 +5,7 @@ import static org.testcontainers.containers.BindMode.READ_ONLY;
 import java.io.Closeable;
 import java.io.File;
 import java.net.URI;
+import java.time.Duration;
 import java.util.UUID;
 import jp.co.soramitsu.iroha.testcontainers.detail.PostgresConfig;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.lifecycle.Startable;
+import org.testcontainers.shaded.com.google.common.util.concurrent.RateLimiter;
 
 /**
  * @implNote If you get {@link com.github.dockerjava.api.exception.DockerException}: Mounts denied,
@@ -97,7 +99,8 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
         .withLogConsumer(logConsumer)
         .withFileSystemBind(conf.getDir().getAbsolutePath(), irohaWorkdir, READ_ONLY)
         .waitingFor(
-            Wait.forListeningPort()
+            Wait.forLogMessage(".*iroha initialized.*\\s", 1)
+                .withStartupTimeout(Duration.ofSeconds(60))
         )
         .withNetworkAliases(defaultIrohaAlias);
 

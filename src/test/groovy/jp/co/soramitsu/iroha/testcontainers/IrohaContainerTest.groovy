@@ -1,23 +1,18 @@
 package jp.co.soramitsu.iroha.testcontainers
 
 import com.google.protobuf.util.JsonFormat
+import io.reactivex.observers.TestObserver
 import iroha.protocol.BlockOuterClass
+import jp.co.soramitsu.iroha.java.IrohaAPI
+import jp.co.soramitsu.iroha.java.Transaction
 import jp.co.soramitsu.iroha.testcontainers.detail.GenesisBlockBuilder
 import jp.co.soramitsu.iroha.testcontainers.detail.IrohaConfig
-import org.junit.Rule
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 import spock.lang.Specification
 
 class IrohaContainerTest extends Specification {
 
-    @Rule
     IrohaContainer ir = new IrohaContainer()
-
-    // run after every feature method
-    def cleanup() {
-        ir.getHostConfigDir().deleteOnExit()
-    }
-
 
     def "temp folder is created and files are written"() {
         given:
@@ -55,19 +50,34 @@ class IrohaContainerTest extends Specification {
     }
 
     def "iroha starts and stops with zero configuration"() {
-        when:
+        when: "start iroha"
         ir.start()
 
-        then:
+        and: "immediately send transaction"
+        def api = new IrohaAPI(ir.getToriiAddress())
+        def s = new TestObserver<>()
+        api.transaction(Transaction.builder("test@test")
+                .createDomain("dom", GenesisBlockBuilder.defaultRoleName)
+                .sign(GenesisBlockBuilder.defaultKeyPair)
+                .build()
+        ).blockingSubscribe(s)
+
+        then: "api is accessible"
+        s.assertSubscribed()
+        s.assertComplete()
+        s.assertNoErrors()
+        s.assertNoTimeout()
+
+        and: "iroha is running"
         ir.irohaDockerContainer.isCreated()
         ir.irohaDockerContainer.isRunning()
         ir.postgresDockerContainer.isCreated()
         ir.postgresDockerContainer.isRunning()
 
-        when:
+        when: "stop iroha"
         ir.stop()
 
-        then:
+        then: "container is no more accessible"
         !ir.irohaDockerContainer.isCreated()
         !ir.irohaDockerContainer.isRunning()
         !ir.postgresDockerContainer.isCreated()

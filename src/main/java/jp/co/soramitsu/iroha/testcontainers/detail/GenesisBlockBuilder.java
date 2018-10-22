@@ -39,7 +39,7 @@ public class GenesisBlockBuilder {
             // give all permissions
             .createRole(
                 defaultRoleName,
-                IntStream.range(0, 42 /* check RolePermission numbers */)
+                IntStream.range(0, 43 /* check RolePermission numbers */)
                     .boxed()
                     .map(RolePermission::forNumber)
                     .collect(Collectors.toList())
