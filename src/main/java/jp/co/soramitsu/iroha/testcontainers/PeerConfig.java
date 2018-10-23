@@ -20,8 +20,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.junit.Rule;
+import lombok.SneakyThrows;
 import org.testcontainers.shaded.com.google.common.io.Files;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -34,18 +35,29 @@ public class PeerConfig {
   public static final String peerKeypairName = "iroha_peer_key";
 
   @Getter
-  private final Map<String, KeyPair> keyPairMap = new HashMap<>();
+  private final Map<String, KeyPair> keyPairMap = new HashMap<String, KeyPair>() {{
+    // default keypair for a single peer
+    put(peerKeypairName, GenesisBlockBuilder.defaultKeyPair);
+  }};
 
   @Builder.Default
   @Getter
-  @Rule
   private File dir = Files.createTempDir();
 
+  @SneakyThrows
+  public void deleteTempDir() {
+    FileUtils.deleteDirectory(dir);
+  }
+
+  @Override
+  @SneakyThrows
+  public void finalize() {
+    deleteTempDir();
+  }
+
   @Builder.Default
   @Getter
-  private IrohaConfig irohaConfig = IrohaConfig
-      .builder()
-      .build();
+  private IrohaConfig irohaConfig = new IrohaConfig();
 
   @Builder.Default
   @Getter
@@ -97,7 +109,7 @@ public class PeerConfig {
 
   public void save() {
     try {
-      withPeerKeyPair(GenesisBlockBuilder.defaultKeyPair);
+      withPeerKeyPair(keyPairMap.get(peerKeypairName));
       writeJsonConfig();
       writeGenesisBlock();
     } catch (IOException e) {

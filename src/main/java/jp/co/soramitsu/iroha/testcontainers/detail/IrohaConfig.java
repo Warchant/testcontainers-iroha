@@ -1,21 +1,23 @@
 package jp.co.soramitsu.iroha.testcontainers.detail;
 
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
-import org.testcontainers.shaded.com.fasterxml.jackson.annotation.JsonProperty;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class IrohaConfig {
+public class IrohaConfig implements Cloneable {
 
   // this one must match config name passed to iroha entrypoint.sh
   public static final String defaultConfigFileName = "config.docker";
@@ -48,4 +50,13 @@ public class IrohaConfig {
 
   @Builder.Default
   private boolean mst_enable = false;
+
+  @Override
+  public IrohaConfig clone() {
+    try {
+      return new DeepCloner<>(IrohaConfig.class).clone(this);
+    } catch (IOException e) {
+      throw new RuntimeIOException(e);
+    }
+  }
 }

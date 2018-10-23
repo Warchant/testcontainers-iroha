@@ -2,6 +2,7 @@ package jp.co.soramitsu.iroha.testcontainers.detail;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.io.IOException;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import lombok.val;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Data
-public class PostgresConfig {
+public class PostgresConfig implements Cloneable {
 
   private static final Pattern pattern = Pattern
       .compile("host=(.+) port=(.+) user=(.+) password=(.+)");
@@ -31,7 +32,7 @@ public class PostgresConfig {
   @Builder.Default
   @NonNull
   private String user = "postgres";
-  
+
   @Builder.Default
   @NonNull
   private String password = "postgres";
@@ -60,5 +61,14 @@ public class PostgresConfig {
     this.port = Integer.parseInt(m.group(++i));
     this.user = m.group(++i);
     this.password = m.group(++i);
+  }
+
+  @Override
+  public PostgresConfig clone() {
+    try {
+      return new DeepCloner<>(PostgresConfig.class).clone(this);
+    } catch (IOException e) {
+      throw new RuntimeIOException(e);
+    }
   }
 }

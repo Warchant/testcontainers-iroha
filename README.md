@@ -13,8 +13,10 @@ https://jitpack.io/#warchant/testcontainers-iroha
 
 # Usage
 
+## Single Peer
+
 ```java
-class MyTest {
+class SinglePeerTest {
   
   IrohaContainer iroha = new IrohaContainer();
   
@@ -31,6 +33,7 @@ class MyTest {
   @Test
   public TestWithIroha (){
     URI toriiAddr = iroha.getToriiAddress();  // iroha API host:port (torii)
+    IrohaAPI api  = iroha.getApi();  // or use async Iroha API wrapper directly
     // ...
   }
 }
@@ -39,7 +42,8 @@ class MyTest {
 `IrohaContainer` starts Postgres and Iroha docker containers with given `PeerConfig`. 
 There is a default config for test purposes.
 
-# Configuration
+
+### Configuration
 
 - genesis block: see [GenesisBlockBuilder.java](https://github.com/Warchant/testcontainers-iroha/blob/master/src/main/java/jp/co/soramitsu/iroha/testcontainers/detail/GenesisBlockBuilder.java).
 - json config: see [IrohaConfig.java](https://github.com/Warchant/testcontainers-iroha/blob/master/src/main/java/jp/co/soramitsu/iroha/testcontainers/detail/IrohaConfig.java).
@@ -53,4 +57,53 @@ IrohaContainer iroha = new IrohaContainer()
 iroha.start();
 ...
 iroha.stop();
+```
+
+## Network Of Peers
+
+```java
+class IrohaNetworkTest {
+  
+  IrohaNetwork iroha = new IrohaNetwork(5 /* peers */);
+  
+  // networks are completely independent
+  IrohaNetwork network2 = new IrohaNetwork(5 /* peers */)
+            .withNetworkName("someUniqueName");
+  
+  @BeforeAll
+  public void beforeAll(){
+    iroha.start(); // starts all containers
+  }
+  
+  @AfterAll
+  public void afterAll(){
+    iroha.stop(); // stops all containers
+  }
+  
+  @Test
+  public TestWithIroha (){
+    List<URI> toriiAddr = iroha.getToriiAddress();  // list of iroha API host:port (torii)
+    List<IrohaAPI> apis = iroha.getApis();  // or list of async Iroha API wrappers, 1 per peer
+    // ...
+  }
+}
+```
+
+### Configuration 
+
+To change default configuration:
+```java
+IrohaNetwork network = new IrohaNetwork(5 /* peers */);
+
+// setup shared iroha config 
+network.withIrohaConfig(IrohaConfig.builder()
+  .setMst_enable(true)
+  .build())
+      
+// to change genesis block (peers are added automatically)
+network.addTransaction(tx);
+
+network.start();
+...
+network.stop();
 ```
