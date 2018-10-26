@@ -35,7 +35,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   public static final String defaultIrohaAlias = "iroha";
   public static final String irohaWorkdir = "/opt/iroha_data";
   public static final String defaultIrohaDockerImage = "warchantua/iroha:1.0.0_beta-4";
-  public static final String postgresDockerImage = "postgres:9.5";
+  public static final String defaultPostgresDockerImage = "postgres:11-alpine";
 
   // env vars
   private static final String POSTGRES_USER = "POSTGRES_USER";
@@ -45,6 +45,7 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   private String irohaAlias = defaultIrohaAlias;
   private String irohaDockerImage = defaultIrohaDockerImage;
   private String postgresAlias = defaultPostgresAlias;
+  private String postgresDockerImage = defaultPostgresDockerImage;
 
   private Logger logger = LoggerFactory.getLogger(IrohaContainer.class);
 
@@ -58,16 +59,6 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
   private GenericContainer irohaDockerContainer;
   @Getter
   private Network network;
-
-  /**
-   * Creates single peer.
-   *
-   * @param irohaDockerImage image name to be created. Needs to be compiled with special startup
-   * scripts (see docker dir).
-   */
-  public IrohaContainer(String irohaDockerImage) {
-    this.irohaDockerImage = irohaDockerImage;
-  }
 
   /**
    * Finalizes current configuration.
@@ -158,6 +149,16 @@ public class IrohaContainer extends FailureDetectingExternalResource implements 
    */
   public IrohaContainer withPostgresAlias(@NonNull String alias) {
     this.postgresAlias = alias;
+    return this;
+  }
+
+  public IrohaContainer withPostgresDockerImage(@NonNull String pgDockerImage) {
+    this.postgresDockerImage = pgDockerImage;
+    return this;
+  }
+
+  public IrohaContainer withIrohaDockerImage(@NonNull String irohaDockerImage) {
+    this.irohaDockerImage = irohaDockerImage;
     return this;
   }
 
