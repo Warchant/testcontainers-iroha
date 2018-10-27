@@ -4,7 +4,14 @@
 [![](https://jitpack.io/v/Warchant/testcontainers-iroha.svg)](https://jitpack.io/#Warchant/testcontainers-iroha)
 
 # testcontainers-iroha
-Testcontainers image for single Iroha peer
+Testcontainers image for single Iroha peer and iroha network. 
+
+# Features
+
+- run one or multiple independent iroha **peers** (not connected to a network) with `IrohaContainer` class.
+- run one or multiple independent iroha **networks** with `IrohaNetwork` class. All peers within a network are connected to a single network.
+- define custom genesis block or peer config for peer/network at run-time.
+- select iroha or postgres version at run-time.
 
 
 # Install
