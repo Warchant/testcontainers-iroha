@@ -13,7 +13,6 @@ Testcontainers image for single Iroha peer and iroha network.
 - define custom genesis block or peer config for peer/network at run-time.
 - select iroha or postgres version at run-time.
 
-
 # Install
 
 https://jitpack.io/#warchant/testcontainers-iroha
@@ -114,3 +113,16 @@ network.start();
 ...
 network.stop();
 ```
+
+# Known Issues
+
+If you get an Exception:
+```
+com.github.dockerjava.api.exception.DockerException: Mounts denied
+```
+You are probably on MAC and you're need to add `/var/folder` to docker paths:
+
+<img src="https://i.imgur.com/K3F1qo0.png" width="400">
+
+Please refer to https://github.com/testcontainers/testcontainers-java/issues/730
+
