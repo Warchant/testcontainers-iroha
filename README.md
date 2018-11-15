@@ -120,7 +120,7 @@ If you get an Exception:
 ```
 com.github.dockerjava.api.exception.DockerException: Mounts denied
 ```
-You are probably on MAC and you're need to add `/var/folder` to docker paths:
+You are probably on MAC and you need to add `/var/folder` to docker paths:
 
 <img src="https://i.imgur.com/K3F1qo0.png" width="400">
 
