@@ -2,6 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce56f4b975e1469da6b7ecfc8b98d879)](https://www.codacy.com/app/Warchant/testcontainers-iroha?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Warchant/testcontainers-iroha&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/Warchant/testcontainers-iroha/branch/master/graph/badge.svg)](https://codecov.io/gh/Warchant/testcontainers-iroha)
 [![](https://jitpack.io/v/Warchant/testcontainers-iroha.svg)](https://jitpack.io/#Warchant/testcontainers-iroha)
+[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/Warchant/testcontainers-iroha/master) 
 
 # testcontainers-iroha
 Testcontainers image for single Iroha peer and iroha network. 
@@ -23,19 +24,19 @@ https://jitpack.io/#warchant/testcontainers-iroha
 
 ```java
 class SinglePeerTest {
-  
+
   IrohaContainer iroha = new IrohaContainer();
-  
+
   @BeforeAll
   public void beforeAll(){
     iroha.start(); // starts iroha and postgres
   }
-  
+
   @AfterAll
   public void afterAll(){
     iroha.stop(); // stops iroha and postgres
   }
-  
+
   @Test
   public TestWithIroha (){
     URI toriiAddr = iroha.getToriiAddress();  // iroha API host:port (torii)
@@ -45,7 +46,7 @@ class SinglePeerTest {
 }
 ```
 
-`IrohaContainer` starts Postgres and Iroha docker containers with given `PeerConfig`. 
+`IrohaContainer` starts Postgres and Iroha docker containers with given `PeerConfig`.
 There is a default config for test purposes.
 
 
@@ -59,7 +60,7 @@ To change default configuration:
 ```java
 IrohaContainer iroha = new IrohaContainer()
     .withPeerConfig( /* pass config here */ );
-    
+
 iroha.start();
 ...
 iroha.stop();
@@ -69,23 +70,23 @@ iroha.stop();
 
 ```java
 class IrohaNetworkTest {
-  
+
   IrohaNetwork iroha = new IrohaNetwork(5 /* peers */);
-  
+
   // networks are completely independent
   IrohaNetwork network2 = new IrohaNetwork(5 /* peers */)
             .withNetworkName("someUniqueName");
-  
+
   @BeforeAll
   public void beforeAll(){
     iroha.start(); // starts all containers
   }
-  
+
   @AfterAll
   public void afterAll(){
     iroha.stop(); // stops all containers
   }
-  
+
   @Test
   public TestWithIroha (){
     List<URI> toriiAddr = iroha.getToriiAddress();  // list of iroha API host:port (torii)
@@ -95,17 +96,17 @@ class IrohaNetworkTest {
 }
 ```
 
-### Configuration 
+### Configuration
 
 To change default configuration:
 ```java
 IrohaNetwork network = new IrohaNetwork(5 /* peers */);
 
-// setup shared iroha config 
+// setup shared iroha config
 network.withIrohaConfig(IrohaConfig.builder()
   .setMst_enable(true)
   .build())
-      
+
 // to change genesis block (peers are added automatically)
 network.addTransaction(tx);
 
