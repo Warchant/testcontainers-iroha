@@ -1,6 +1,6 @@
 # testcontainers-iroha
 
-`testcontainers-iroha` is a Java library that support JUnit tests, providing lightweight, throwaway instance of Iroha running in a Docker container.
+is a Java library that support JUnit tests, providing lightweight, throwaway instance of Iroha running in a Docker container.
 
 ---
 
@@ -110,8 +110,8 @@ IrohaContainer iroha = new IrohaContainer()
           .withPeerConfig(config);
 ```
 
-@[1-12](Create any amount of transactions that you want to insert in genesis block)
-@[14-17](Create GenesisBlockBuilder with given transaction(s))
+@[1-13](Create any amount of transactions that you want to insert in genesis block)
+@[15-17](Create GenesisBlockBuilder with given transaction(s))
 @[19-22](Create config.json object)
 @[24-27](Combine all configs as PeerConfig)
 @[30](Set given config to IrohaContainer, start peer and use its API.)
@@ -138,9 +138,9 @@ IntStream.range(5, 10)
         );
 ```
 @[1](You also can create networks!)
-@[4-6](Or even, multiple independent networks!)
+@[3-6](Or even, multiple independent networks!)
 @[8](This is how you can get access to API of each peer)
-@[11](For example, you can send transactions in parallel to all peers in all networks)
+@[10](For example, you can send transactions in parallel to all peers in all networks)
 
 +++
 @snap[north-west]
@@ -150,7 +150,7 @@ IntStream.range(5, 10)
 - you can specify iroha and postgres versions manually
 - create independent peers with `IrohaContainer`
 - create independent **networks of peers** with `IrohaNetwork`
-- config and keypairs are created in tmp dir on the host system, so you can get path and
+- config and keypairs are created in tmp dir on the host system, so you can read that path
 
 +++
 
