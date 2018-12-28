@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'jp.co.soramitsu.iroha'
-version 'iroha-1.0.0_rc1-ti-1.0.0'
+version '1.0.0_rc2-ti-1.0.0'
 
 sourceCompatibility = 1.8
 
@@ -18,7 +18,7 @@ repositories {
 }
 
 final def testContainersVersion = '1.10.2'
-final def irohaPureJavaVersion = 'v1.0.0_rc1-SNAPSHOT'
+final def irohaPureJavaVersion = 'v1.0.0_rc2-SNAPSHOT'
 final def lombokVersion = '1.18.4'
 final def jacksonVersion = '2.9.7'
 final def spockVersion = '1.2-groovy-2.4'
